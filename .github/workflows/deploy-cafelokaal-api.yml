@@ -1,0 +1,43 @@
+name: Deploy cafelokaal API to Azure App Service
+
+on:
+  push:
+    branches:
+      - main  # or your production branch
+
+env:
+  DOTNET_VERSION: latest
+
+jobs:
+  build-and-deploy-api:
+    name: Build and Deploy API
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: latest
+
+      - name: Restore dependencies
+        working-directory: ./api
+        run: dotnet restore
+
+      - name: Build API
+        working-directory: ./api
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish API
+        working-directory: ./api
+        run: dotnet publish -c Release -o ./publish
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: cafelokaal-api  # 🔁 Change this to your actual App Service name
+          slot-name: Production
+          publish-profile: ${{ secrets.AZURE_API_PUBLISH_PROFILE }}
+          package: ./api/publish
