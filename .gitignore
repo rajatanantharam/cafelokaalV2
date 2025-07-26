@@ -1,0 +1,74 @@
+# Visual Studio / Visual Studio Code
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# .NET
+**/[Dd]ebug/
+**/[Dd]ebugPublic/
+**/[Rr]elease/
+**/[Rr]eleases/
+**/x64/
+**/x86/
+**/[Bb]in/
+**/[Oo]bj/
+**/msbuild.log
+**/msbuild.err
+**/msbuild.wrn
+
+# Angular / Node.js
+**/node_modules/
+**/dist/
+**/tmp/
+**/.angular/
+**/.sass-cache/
+**/npm-debug.log
+**/yarn-debug.log
+**/yarn-error.log
+**/testem.log
+**/coverage/
+**/.env
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+*.launch
+*.sublime-workspace
+
+# misc
+.DS_Store
+Thumbs.db
+**/[Ll]ogs/
+
+# Azure
+.azure/
+**/appsettings.Development.json
+**/local.settings.json
+
+# Visual Studio cache
+.vs/
+**/*.suo
+**/*.user
+**/*.userosscache
+**/*.sln.docstates
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# Specific to this project
+CafeLokaal.Web/node_modules/
+CafeLokaal.Web/dist/
+CafeLokaal.Web/src/environments/environment.ts
+CafeLokaal.Web/.angular/
+CafeLokaal.Api/bin/
+CafeLokaal.Api/obj/
