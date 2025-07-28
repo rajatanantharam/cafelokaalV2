@@ -23,7 +23,7 @@ import { filter, takeUntil } from 'rxjs/operators';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'Microsoft identity platform';
+  title = 'Brewstack';
   loginDisplay = false;
   isIframe = false;
 

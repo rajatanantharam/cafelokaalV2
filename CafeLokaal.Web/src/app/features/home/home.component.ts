@@ -5,8 +5,6 @@ import { filter } from 'rxjs/operators';
 import { MsalBroadcastService, MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/msal-angular';
 import { AuthenticationResult, InteractionStatus, InteractionType } from '@azure/msal-browser';
 
-import { createClaimsTable } from '../auth/claim-utils';
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -14,9 +12,6 @@ import { createClaimsTable } from '../auth/claim-utils';
 })
 export class HomeComponent implements OnInit {
   loginDisplay = false;
-  dataSource: any = [];
-  displayedColumns: string[] = ['claim', 'value', 'description'];
-
   private readonly _destroying$ = new Subject<void>();
 
   constructor(
@@ -27,28 +22,17 @@ export class HomeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
     this.msalBroadcastService.inProgress$
       .pipe(
         filter((status: InteractionStatus) => status === InteractionStatus.None)
       )
       .subscribe(() => {
         this.setLoginDisplay();
-        this.getClaims(
-          this.authService.instance.getActiveAccount()?.idTokenClaims
-        );
       });
   }
 
   setLoginDisplay() {
     this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
-  }
-
-  getClaims(claims: any) {
-    if (claims) {
-      const claimsTable = createClaimsTable(claims);
-      this.dataSource = [...claimsTable];
-    }
   }
 
   signUp() {
