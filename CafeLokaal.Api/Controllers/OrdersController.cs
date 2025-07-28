@@ -13,12 +13,12 @@ namespace CafeLokaal.Api.Controllers;
 [Authorize]
 public class OrdersController : ControllerBase
 {
-    private readonly CafeLokaalContext _context;
+    // private readonly CafeLokaalContext _context;
     private readonly ILogger<OrdersController> _logger;
 
-    public OrdersController(CafeLokaalContext context, ILogger<OrdersController> logger)
+    public OrdersController(ILogger<OrdersController> logger)
     {
-        _context = context;
+        // _context = context;
         _logger = logger;
     }
 
@@ -54,32 +54,32 @@ public class OrdersController : ControllerBase
             });
     }
 
-    [HttpPost("/api/posdata")]
-    public async Task<IActionResult> SyncData([FromBody] OrderSyncRequest request)
-    {
-        try
-        {
-            foreach (var order in request.Orders)
-            {
-                if (await _context.Orders.AnyAsync(o => o.OrderId == order.OrderId))
-                {
-                    _context.Orders.Update(order);
-                }
-                else
-                {
-                    await _context.Orders.AddAsync(order);
-                }
-            }
+    // [HttpPost("/api/posdata")]
+    // public async Task<IActionResult> SyncData([FromBody] OrderSyncRequest request)
+    // {
+    //     try
+    //     {
+    //         foreach (var order in request.Orders)
+    //         {
+    //             if (await _context.Orders.AnyAsync(o => o.OrderId == order.OrderId))
+    //             {
+    //                 _context.Orders.Update(order);
+    //             }
+    //             else
+    //             {
+    //                 await _context.Orders.AddAsync(order);
+    //             }
+    //         }
 
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error syncing POS data");
-            return StatusCode(500, "An error occurred while syncing POS data");
-        }
-    }
+    //         await _context.SaveChangesAsync();
+    //         return Ok();
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         _logger.LogError(ex, "Error syncing POS data");
+    //         return StatusCode(500, "An error occurred while syncing POS data");
+    //     }
+    // }
 }
 
 public class OrderSyncRequest

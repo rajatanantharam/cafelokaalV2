@@ -72,3 +72,4 @@ CafeLokaal.Web/src/environments/environment.ts
 CafeLokaal.Web/.angular/
 CafeLokaal.Api/bin/
 CafeLokaal.Api/obj/
+CafeLokaal.Web/package-lock.json

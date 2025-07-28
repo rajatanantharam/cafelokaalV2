@@ -21,22 +21,35 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // Configure kestrel to listen on port 8080
-builder.WebHost.UseUrls("http://0.0.0.0:8080");
+// builder.WebHost.UseUrls("http://0.0.0.0:8080");
+// 🔥 Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200") // your Angular app
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
+
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors(policy => policy
         .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader());
-    app.UseHttpsRedirection();
+    // app.UseHttpsRedirection();
     IdentityModelEventSource.ShowPII = true;
     IdentityModelEventSource.LogCompleteSecurityArtifact = true;
+    app.UseCors("AllowAngularLocalhost");
 }
 
 // app.UseHttpsRedirection();
@@ -44,4 +57,5 @@ if (app.Environment.IsDevelopment())
 // Add authentication & authorization to the pipeline
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapControllers();
 app.Run();
