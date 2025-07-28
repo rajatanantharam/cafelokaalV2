@@ -22,8 +22,10 @@
     </div>
   </mat-card>
 
-  <mat-card class="card-section" *ngIf="loginDisplay">
-    <mat-card-title>Dashboard</mat-card-title>
-    <mat-card-content>Welcome to your dashboard!</mat-card-content>
-  </mat-card>
+  <div class="dashboard-container" *ngIf="loginDisplay">
+    <div class="chart-container">
+      <h3>Order Process Times</h3>
+      <canvas #orderChart id="orderChart" width="400" height="200"></canvas>
+    </div>
+  </div>
 </div>

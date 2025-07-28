@@ -1,5 +1,4 @@
 export interface CafeOrderModel {
-  orderId: string;
   organizationId: string;
   organizationName: string;
   orders: OrderItem[];

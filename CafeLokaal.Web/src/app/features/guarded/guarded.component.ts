@@ -9,7 +9,7 @@ import { finalize } from 'rxjs/operators';
   styleUrls: ['./guarded.component.css']
 })
 export class GuardedComponent implements OnInit {
-  orders: CafeOrderModel[] = [];
+  cafeOrderModel: CafeOrderModel | null = null;
   loading = false;
   error: string | null = null;
 
@@ -28,8 +28,8 @@ export class GuardedComponent implements OnInit {
         finalize(() => this.loading = false)
       )
       .subscribe({
-        next: (orders) => {
-          this.orders = orders;
+        next: (x) => {
+          this.cafeOrderModel = x;
         },
         error: (error) => {
           console.error('Error fetching orders:', error);

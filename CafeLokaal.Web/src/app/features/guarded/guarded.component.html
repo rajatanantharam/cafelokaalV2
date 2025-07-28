@@ -2,7 +2,7 @@
   <div *ngIf="error" class="error">
     {{ error }}
   </div>
-  <div *ngIf="!loading && !error && orders.length === 0" class="no-orders">
+  <div *ngIf="!loading && !error" class="no-orders">
     No orders found. This could mean either you don't have any orders yet, or you don't have the correct permissions.
   </div>
 </div>
