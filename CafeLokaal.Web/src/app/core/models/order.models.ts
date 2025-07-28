@@ -1,30 +1,18 @@
 export interface CafeOrderModel {
   orderId: string;
-  cafeId: string;
-  customerName: string;
-  items: OrderItem[];
-  totalAmount: number;
-  orderStates: OrderStates;
+  organizationId: string;
+  organizationName: string;
+  orders: OrderItem[];
 }
-
 export interface OrderItem {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
+  orderId: string;
+  orderState: OrderState;
+  processTime: number;
+  processDate: Date;
 }
 
-export interface OrderStates {
-  orderReceived: OrderState;
-  orderPrepared: OrderState;
-  orderServed: OrderState;
-}
-
-export interface OrderState {
-  startTimestamp: Date;
-  endTimestamp: Date;
-}
-
-export interface OrderSyncRequest {
-  orders: CafeOrderModel[];
+export enum OrderState {
+  OrderReceived = 'OrderReceived',
+  OrderPrepared = 'OrderPrepared',
+  OrderServed = 'OrderServed',
 }

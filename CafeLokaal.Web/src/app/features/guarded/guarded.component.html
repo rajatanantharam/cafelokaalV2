@@ -1,27 +1,7 @@
 <div class="orders-test">
-  <h2>Orders API Test</h2>
-  
-  <button (click)="fetchOrders()" [disabled]="loading">
-    {{ loading ? 'Loading...' : 'Test Orders API' }}
-  </button>
-
   <div *ngIf="error" class="error">
     {{ error }}
   </div>
-
-  <div *ngIf="orders.length > 0" class="orders">
-    <h3>Orders received ({{ orders.length }}):</h3>
-    <ul>
-      <li *ngFor="let order of orders">
-        Order ID: {{ order.orderId }}
-        <br>
-        Customer: {{ order.customerName }}
-        <br>
-        Total: {{ order.totalAmount | currency }}
-      </li>
-    </ul>
-  </div>
-
   <div *ngIf="!loading && !error && orders.length === 0" class="no-orders">
     No orders found. This could mean either you don't have any orders yet, or you don't have the correct permissions.
   </div>

@@ -53,6 +53,17 @@ export class HomeComponent implements OnInit {
 
   }
 
+  login() {
+    if (this.msalGuardConfig?.interactionType === InteractionType.Popup) {
+      this.authService?.loginPopup({ scopes: [] })
+        .subscribe((response: AuthenticationResult) => {
+          this.authService?.instance.setActiveAccount(response.account);
+        });
+    } else {
+      this.authService?.loginRedirect({ scopes: [] });
+    }
+  }
+
   // unsubscribe to events when component is destroyed
   ngOnDestroy(): void {
     this._destroying$.next(undefined);

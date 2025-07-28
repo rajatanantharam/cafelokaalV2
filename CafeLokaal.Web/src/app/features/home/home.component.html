@@ -1,8 +1,25 @@
 <div class="container">
   <mat-card class="card-section" *ngIf="!loginDisplay">
     <mat-card-title>Welcome to Brewstack</mat-card-title>
-    <mat-card-content>Please sign up to continue</mat-card-content>
-    <button mat-raised-button color="primary" (click)="signUp()">Sign up</button>
+    <mat-card-content>Please sign up or login to continue</mat-card-content>
+    <div class="button-group">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="signUp()" 
+        aria-label="Sign up for a new account"
+        class="auth-button">
+        Sign up
+      </button>
+      <button 
+        mat-raised-button 
+        color="accent" 
+        (click)="login()" 
+        aria-label="Log in to your account"
+        class="auth-button">
+        Login
+      </button>
+    </div>
   </mat-card>
 
   <mat-card class="card-section" *ngIf="loginDisplay">
