@@ -23,8 +23,8 @@ public class OrdersController : ControllerBase
     }
 
     [HttpGet]
-    [EnableCors("AllowOrigin")] 
-    public async Task<ActionResult<IEnumerable<CafeOrderModel>>> GetOrders()
+    [EnableCors("AllowOrigin")]
+    public ActionResult<IEnumerable<CafeOrderModel>> GetOrders()
     {
         // try
         // {
@@ -45,11 +45,19 @@ public class OrdersController : ControllerBase
         return // a dummy order list for now
             Ok(new List<CafeOrderModel>
             {
-                new CafeOrderModel
-                {
-                    OrderId = Guid.NewGuid(),
-                    CafeId = "Cafe123",
-                    TotalAmount = 100.00m,
+                new() {
+                    OrganizationId = "Org123",
+                    OrganizationName = "Cafe Willem",
+                    Orders =
+                    [
+                        new OrderItem
+                        {
+                            OrderId = "Order123",
+                            OrderStep = OrderStep.OrderReceived,
+                            ProcessTime = 30,
+                            ProcessDate = DateTime.UtcNow
+                        }
+                    ]
                 }
             });
     }
