@@ -81,8 +81,3 @@ public class OrdersController : ControllerBase
     //     }
     // }
 }
-
-public class OrderSyncRequest
-{
-    public List<CafeOrderModel> Orders { get; set; } = new();
-}

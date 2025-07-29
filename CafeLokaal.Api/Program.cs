@@ -1,4 +1,6 @@
+using CafeLokaal.Api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -15,10 +17,19 @@ builder.Services.AddSwaggerGen();
 
 // Configure authentication with Microsoft Identity (Entra ID/B2C)
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("MSENTRA")); 
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("MSENTRA"));
 
 // Add authorization
 builder.Services.AddAuthorization();
+
+// Add DB context
+builder.Services.AddDbContext<CafeLokaalContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        new MySqlServerVersion(new Version(8, 0, 26))
+    ));
+
+
 
 // Configure kestrel to listen on port 8080
 // builder.WebHost.UseUrls("http://0.0.0.0:8080");
