@@ -29,6 +29,9 @@ builder.Services.AddDbContext<CafeLokaalDBContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 26))
     ));
 
+// Add repositories
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
 
 
 // Configure kestrel to listen on port 8080
