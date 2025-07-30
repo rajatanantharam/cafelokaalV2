@@ -10,7 +10,6 @@ namespace CafeLokaal.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
 public class OrdersController : ControllerBase
 {
     private readonly IOrderRepository _orderRepository;
@@ -26,7 +25,6 @@ public class OrdersController : ControllerBase
     // to ensure that the user can only access orders for their organization. Do not trust the organizationId from the query string.
 
     [HttpGet]
-    [EnableCors("AllowOrigin")]
     public async Task<ActionResult<IEnumerable<CafeOrderModel>>> GetOrders([FromQuery] string organizationId)
     {
         try
@@ -38,6 +36,21 @@ public class OrdersController : ControllerBase
         {
             _logger.LogError(ex, "Error retrieving orders for cafe {CafeId}", User.Claims.FirstOrDefault(c => c.Type == "extension_CafeId")?.Value);
             return StatusCode(500, "An error occurred while retrieving orders");
+        }
+    }
+
+    [HttpPost("/api/orders/seed")]
+    public async Task<ActionResult> CreateDummyOrders()
+    {
+        try
+        {
+            await _orderRepository.CreateDummyOrdersAsync();
+            return Ok(new { Message = "Dummy orders created successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating dummy orders");
+            return StatusCode(500, "An error occurred while creating dummy orders");
         }
     }
 }

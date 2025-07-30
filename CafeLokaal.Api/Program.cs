@@ -32,8 +32,6 @@ builder.Services.AddDbContext<CafeLokaalDBContext>(options =>
 // Add repositories
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
-
-
 // Configure kestrel to listen on port 8080
 // builder.WebHost.UseUrls("http://0.0.0.0:8080");
 // 🔥 Add CORS policy
@@ -64,6 +62,11 @@ if (app.Environment.IsDevelopment())
     IdentityModelEventSource.ShowPII = true;
     IdentityModelEventSource.LogCompleteSecurityArtifact = true;
     app.UseCors("AllowAngularLocalhost");
+
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<CafeLokaalDBContext>();
+    db.Database.Migrate();
+
 }
 
 // app.UseHttpsRedirection();
