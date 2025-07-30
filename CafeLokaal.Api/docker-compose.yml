@@ -6,21 +6,68 @@ services:
         - "5107:8080"
       environment:
         - ASPNETCORE_ENVIRONMENT=Development
-        - ConnectionStrings__DefaultConnection=Server=${DB_HOST};Database=${DB_NAME};User=${DB_USER};Password=${DB_PASSWORD};
-        - Some__ApiKey=${API_KEY}
+        - ConnectionStrings__Cafelokaal=Server=${DB_HOST_CAFE_LOKAAL};Port=3306;Database=${DB_NAME_CAFE_LOKAAL};User=${DB_USER_CAFE_LOKAAL};Password=${DB_PASSWORD_CAFE_LOKAAL};
+        - ConnectionStrings__CafeOlivier=Server=${DB_HOST_CAFE_OLIVIER};Port=3306;Database=${DB_NAME_CAFE_OLIVIER};User=${DB_USER_CAFE_OLIVIER};Password=${DB_PASSWORD_CAFE_OLIVIER};
+        - ConnectionStrings__CafeWillem=Server=${DB_HOST_CAFE_WILLEM};Port=3306;Database=${DB_NAME_CAFE_WILLEM};User=${DB_USER_CAFE_WILLEM};Password=${DB_PASSWORD_CAFE_WILLEM};
+        - ConnectionStrings__CafeOrloff=Server=${DB_HOST_CAFE_ORLOFF};Port=3306;Database=${DB_NAME_CAFE_ORLOFF};User=${DB_USER_CAFE_ORLOFF};Password=${DB_PASSWORD_CAFE_ORLOFF};
       depends_on:
-        - mysql # optional if DB is managed separately
-    mysql:
+        - mysql-cafelokaal
+        - mysql-cafeolivier
+        - mysql-cafewillem
+        - mysql-cafeorloff
+    mysql-cafelokaal:
       image: mysql:8
       container_name: mysql-cafelokaal
       ports:
-        - "3306:3306"
+        - "${DB_PORT_CAFE_LOKAAL}:3306"
       environment:
-        - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
-        - MYSQL_DATABASE=${DB_NAME}
-        - MYSQL_USER=${DB_USER}
-        - MYSQL_PASSWORD=${DB_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD_CAFE_LOKAAL}
+        - MYSQL_DATABASE=${DB_NAME_CAFE_LOKAAL}
+        - MYSQL_USER=${DB_USER_CAFE_LOKAAL}
+        - MYSQL_PASSWORD=${DB_PASSWORD_CAFE_LOKAAL}
       volumes:
-        - mysql_data:/var/lib/mysql
+        - mysql_data_cafelokaal:/var/lib/mysql
+
+    mysql-cafeolivier:
+      image: mysql:8
+      container_name: mysql-cafeolivier
+      ports:
+        - "${DB_PORT_CAFE_OLIVIER}:3306"
+      environment:
+        - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD_CAFE_OLIVIER}
+        - MYSQL_DATABASE=${DB_NAME_CAFE_OLIVIER}
+        - MYSQL_USER=${DB_USER_CAFE_OLIVIER}
+        - MYSQL_PASSWORD=${DB_PASSWORD_CAFE_OLIVIER}
+      volumes:
+        - mysql_data_cafeolivier:/var/lib/mysql
+    mysql-cafewillem:
+      image: mysql:8
+      container_name: mysql-cafewillem
+      ports:
+        - "${DB_PORT_CAFE_WILLEM}:3306"
+      environment:
+        - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD_CAFE_WILLEM}
+        - MYSQL_DATABASE=${DB_NAME_CAFE_WILLEM}
+        - MYSQL_USER=${DB_USER_CAFE_WILLEM}
+        - MYSQL_PASSWORD=${DB_PASSWORD_CAFE_WILLEM}
+      volumes:
+        - mysql_data_cafewillem:/var/lib/mysql
+
+    mysql-cafeorloff:
+      image: mysql:8
+      container_name: mysql-cafeorloff
+      ports:
+        - "${DB_PORT_CAFE_ORLOFF}:3306"
+      environment:
+        - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD_CAFE_ORLOFF}
+        - MYSQL_DATABASE=${DB_NAME_CAFE_ORLOFF}
+        - MYSQL_USER=${DB_USER_CAFE_ORLOFF}
+        - MYSQL_PASSWORD=${DB_PASSWORD_CAFE_ORLOFF}
+      volumes:
+        - mysql_data_cafeorloff:/var/lib/mysql
+
 volumes:
-  mysql_data:
+  mysql_data_cafelokaal:
+  mysql_data_cafeolivier:
+  mysql_data_cafewillem:
+  mysql_data_cafeorloff:
