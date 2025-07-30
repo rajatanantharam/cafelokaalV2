@@ -13,79 +13,31 @@ namespace CafeLokaal.Api.Controllers;
 [Authorize]
 public class OrdersController : ControllerBase
 {
-    // private readonly CafeLokaalContext _context;
+    private readonly IOrderRepository _orderRepository;
     private readonly ILogger<OrdersController> _logger;
 
-    public OrdersController(ILogger<OrdersController> logger)
+    public OrdersController(IOrderRepository orderRepository, ILogger<OrdersController> logger)
     {
-        // _context = context;
+        _orderRepository = orderRepository;
         _logger = logger;
     }
 
+    //TODO: This endpoint should be authorized and the organizationId should be queried from the user's claims
+    // to ensure that the user can only access orders for their organization. Do not trust the organizationId from the query string.
+
     [HttpGet]
     [EnableCors("AllowOrigin")]
-    public ActionResult<IEnumerable<CafeOrderModel>> GetOrders()
+    public async Task<ActionResult<IEnumerable<CafeOrderModel>>> GetOrders([FromQuery] string organizationId)
     {
-        // try
-        // {
-        //     var cafeId = User.Claims.FirstOrDefault(c => c.Type == "extension_CafeId")?.Value;
-        //     var orders = await _context.Orders
-        //         .AsNoTracking()
-        //         .Where(o => o.CafeId == cafeId)
-        //         .ToListAsync();
-
-        //     return Ok(orders);
-        // }
-        // catch (Exception ex)
-        // {
-        //     _logger.LogError(ex, "Error retrieving orders");
-        //     return StatusCode(500, "An error occurred while retrieving orders");
-        // }
-
-        return // a dummy order list for now
-            Ok(new List<CafeOrderModel>
-            {
-                new() {
-                    OrganizationId = "Org123",
-                    OrganizationName = "Cafe Willem",
-                    Orders =
-                    [
-                        new OrderItem
-                        {
-                            OrderId = "Order123",
-                            OrderStep = OrderStep.OrderReceived,
-                            ProcessTime = 30,
-                            ProcessDate = DateTime.UtcNow
-                        }
-                    ]
-                }
-            });
+        try
+        {
+            var cafeOrders = await _orderRepository.GetOrdersAsync(organizationId);
+            return Ok(cafeOrders);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving orders for cafe {CafeId}", User.Claims.FirstOrDefault(c => c.Type == "extension_CafeId")?.Value);
+            return StatusCode(500, "An error occurred while retrieving orders");
+        }
     }
-
-    // [HttpPost("/api/posdata")]
-    // public async Task<IActionResult> SyncData([FromBody] OrderSyncRequest request)
-    // {
-    //     try
-    //     {
-    //         foreach (var order in request.Orders)
-    //         {
-    //             if (await _context.Orders.AnyAsync(o => o.OrderId == order.OrderId))
-    //             {
-    //                 _context.Orders.Update(order);
-    //             }
-    //             else
-    //             {
-    //                 await _context.Orders.AddAsync(order);
-    //             }
-    //         }
-
-    //         await _context.SaveChangesAsync();
-    //         return Ok();
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         _logger.LogError(ex, "Error syncing POS data");
-    //         return StatusCode(500, "An error occurred while syncing POS data");
-    //     }
-    // }
 }

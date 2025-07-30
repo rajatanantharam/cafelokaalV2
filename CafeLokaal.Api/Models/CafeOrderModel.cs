@@ -4,11 +4,6 @@ namespace CafeLokaal.Api.Models
     {
         public string OrganizationId { get; set; } = string.Empty;
         public string OrganizationName { get; set; } = string.Empty;
-        public List<OrderItem> Orders { get; set; } = [];
-    }
-
-    public class OrderItem
-    {
         public string OrderId { get; set; } = string.Empty;
         public OrderStep OrderStep { get; set; } = OrderStep.Unknown;
         public int ProcessTime { get; set; }

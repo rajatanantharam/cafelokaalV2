@@ -1,6 +1,6 @@
 namespace CafeLokaal.Api.Models
 {
-    public class RegisteredUsers
+    public class RegisteredUser
     {
         public Guid UserId { get; set; }
         public Guid OrganizationId { get; set; } = Guid.Empty;
