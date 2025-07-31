@@ -5,6 +5,7 @@ namespace CafeLokaal.Api.Data;
 public class CafeLokaalContext(DbContextOptions<CafeLokaalContext> options) : DbContext(options)
 {
     public DbSet<CafeOrder> CafeOrders { get; set; }
+    public DbSet<UserAccess> UserAccess { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +29,17 @@ public class CafeLokaalContext(DbContextOptions<CafeLokaalContext> options) : Db
                   .IsRequired();
             entity.HasIndex(e => e.OrganizationId);
             entity.HasIndex(e => e.OrderId);
+        });
+
+        // Configure UserAccess entity
+        modelBuilder.Entity<UserAccess>(entity =>
+        {
+            entity.HasKey(e => new { e.Email, e.OrganizationName });
+            entity.Property(e => e.Email).IsRequired().HasMaxLength(255);
+            entity.Property(e => e.OrganizationName).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.SubscriptionId).IsRequired().HasMaxLength(100);
+            entity.HasIndex(e => e.Email);
+            entity.HasIndex(e => e.OrganizationName);
         });
     }
 

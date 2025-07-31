@@ -1,5 +1,4 @@
 using CafeLokaal.Api.Data;
-using CafeLokaal.Api.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
@@ -22,8 +21,8 @@ builder.Services.AddAuthorization();
 
 // Add repositories
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-builder.Services.AddScoped<ICafeResolver, UserCafeResolver>();
-builder.Services.AddScoped<IRegisteredUserRepository, RegisteredUserRepository>();
+builder.Services.AddScoped<IUserAccessRepository, UserAccessRepository>();
+builder.Services.AddScoped<IDBContextResolver, DBContextResolver>();
 
 builder.Services.AddDbContextFactory<CafeLokaalContext>();
 

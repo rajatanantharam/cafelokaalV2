@@ -1,11 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
-using Microsoft.EntityFrameworkCore;
 using CafeLokaal.Api.Data;
 using CafeLokaal.Api.Models;
-using Microsoft.AspNetCore.Cors;
-using CafeLokaal.Api.Middleware;
 
 namespace CafeLokaal.Api.Controllers;
 
@@ -30,6 +25,11 @@ public class OrdersController : ControllerBase
     {
         try
         {
+            if (string.IsNullOrEmpty(organizationName))
+            {
+                return BadRequest("Organization name is required");
+            }
+               
             var cafeOrders = await _orderRepository.GetOrdersAsync(organizationName);
             return Ok(cafeOrders);
         }

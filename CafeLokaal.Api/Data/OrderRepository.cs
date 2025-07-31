@@ -11,18 +11,18 @@ namespace CafeLokaal.Api.Data
 
     public class OrderRepository : IOrderRepository
     {
-        private readonly IConfiguration _configuration;
         private readonly ILogger<OrderRepository> _logger;
+        private readonly IDBContextResolver _dbContextResolver;
 
-        public OrderRepository(IConfiguration configuration, ILogger<OrderRepository> logger)
+        public OrderRepository(IDBContextResolver dbContextResolver, ILogger<OrderRepository> logger)
         {
-            _configuration = configuration;
+            _dbContextResolver = dbContextResolver;
             _logger = logger;
         }
 
         public async Task CreateDummyOrdersAsync(string organizationName)
         {
-            using var context = GetCafeLokaalContext(organizationName);
+            using var context = _dbContextResolver.GetCafeTenantDB(organizationName);
 
             _logger.LogInformation("Creating dummy orders for organization: {OrganizationName}", organizationName);
             var dummyOrders = new List<CafeOrder>();
@@ -61,7 +61,7 @@ namespace CafeLokaal.Api.Data
 
             try
             {
-                using var context = GetCafeLokaalContext(organizationName);
+                using var context = _dbContextResolver.GetCafeTenantDB(organizationName);
                 var query = context.CafeOrders.AsQueryable();
                 query = query.Where(o => o.OrganizationName == organizationName);
                 return await query.ToListAsync();
@@ -71,15 +71,6 @@ namespace CafeLokaal.Api.Data
                 _logger.LogError(ex, "Error retrieving orders for organization: {OrganizationName}", organizationName);
                 throw new Exception("An error occurred while retrieving orders", ex);
             }
-        }
-
-        private CafeLokaalContext GetCafeLokaalContext(string organizationName)
-        {
-            var connectionString = _configuration.GetConnectionString(organizationName);
-            var optionsBuilder = new DbContextOptionsBuilder<CafeLokaalContext>();
-            optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 26)));
-            var context = new CafeLokaalContext(optionsBuilder.Options);
-            return context;
         }
     }
 }
