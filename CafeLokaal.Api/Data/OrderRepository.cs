@@ -5,38 +5,41 @@ namespace CafeLokaal.Api.Data
 {
     public interface IOrderRepository
     {
-        Task CreateDummyOrdersAsync();
-        Task<IEnumerable<CafeOrderModel>> GetOrdersAsync(string organizationId);
+        Task CreateDummyOrdersAsync(string organizationName);
+        Task<IEnumerable<CafeOrder>> GetOrdersAsync(string organizationName);
     }
 
-    public class OrderRepository(CafeLokaalDBContext context, ILogger<OrderRepository> logger) : IOrderRepository
+    public class OrderRepository : IOrderRepository
     {
-        private readonly CafeLokaalDBContext _context = context;
-        private readonly ILogger<OrderRepository> _logger = logger;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<OrderRepository> _logger;
 
-        public async Task CreateDummyOrdersAsync()
-        {          
-            var dummyOrders = new List<CafeOrderModel>();
+        public OrderRepository(IConfiguration configuration, ILogger<OrderRepository> logger)
+        {
+            _configuration = configuration;
+            _logger = logger;
+        }
+
+        public async Task CreateDummyOrdersAsync(string organizationName)
+        {
+            using var context = GetCafeLokaalContext(organizationName);
+
+            _logger.LogInformation("Creating dummy orders for organization: {OrganizationName}", organizationName);
+            var dummyOrders = new List<CafeOrder>();
             var random = new Random();
             var orderSteps = new[] { OrderStep.OrderReceived, OrderStep.OrderPrepared, OrderStep.OrderServed };
-            var organizations = new[]
-            {
-                new { Id = "ORG001", Name = "Cafe Willem" },
-                new { Id = "ORG002", Name = "Cafe Olivier" },
-                new { Id = "ORG003", Name = "Cafe Orloff" }               
-            };
+            var organization = new { Id = Guid.NewGuid().ToString(), Name = organizationName };
 
             for (int i = 1; i <= 20; i++)
             {
-                var org = organizations[random.Next(organizations.Length)];
                 var orderStep = orderSteps[random.Next(orderSteps.Length)];
                 var processDate = DateTime.UtcNow.AddDays(-random.Next(30)).AddHours(-random.Next(24));
 
-                dummyOrders.Add(new CafeOrderModel
+                dummyOrders.Add(new CafeOrder
                 {
                     OrderId = $"ORDER{i:D3}",
-                    OrganizationId = org.Id,
-                    OrganizationName = org.Name,
+                    OrganizationId = organization.Id,
+                    OrganizationName = organization.Name,
                     OrderStep = orderStep,
                     ProcessTime = random.Next(5, 45), // 5-45 minutes
                     ProcessDate = processDate
@@ -44,26 +47,39 @@ namespace CafeLokaal.Api.Data
             }
 
             // Add to database
-            await _context.CafeOrderModels.AddRangeAsync(dummyOrders);
-            await _context.SaveChangesAsync();
+            await context.CafeOrders.AddRangeAsync(dummyOrders);
+            await context.SaveChangesAsync();
             _logger.LogInformation("Successfully created {Count} dummy orders", dummyOrders.Count);
         }
 
-        public async Task<IEnumerable<CafeOrderModel>> GetOrdersAsync(string organizationId)
+        public async Task<IEnumerable<CafeOrder>> GetOrdersAsync(string organizationName)
         {
-         
-            if (string.IsNullOrEmpty(organizationId))
+            if (string.IsNullOrEmpty(organizationName))
             {
-                return [];
+                throw new BadHttpRequestException("Organization name cannot be null or empty");
             }
 
-            var query = _context.CafeOrderModels.AsQueryable();
-            query = query.Where(o => o.OrganizationId == organizationId);
-            return await query
-                .OrderByDescending(o => o.ProcessDate)
-                .AsNoTracking()
-                .ToListAsync();
+            try
+            {
+                using var context = GetCafeLokaalContext(organizationName);
+                var query = context.CafeOrders.AsQueryable();
+                query = query.Where(o => o.OrganizationName == organizationName);
+                return await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving orders for organization: {OrganizationName}", organizationName);
+                throw new Exception("An error occurred while retrieving orders", ex);
+            }
+        }
 
+        private CafeLokaalContext GetCafeLokaalContext(string organizationName)
+        {
+            var connectionString = _configuration.GetConnectionString(organizationName);
+            var optionsBuilder = new DbContextOptionsBuilder<CafeLokaalContext>();
+            optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 26)));
+            var context = new CafeLokaalContext(optionsBuilder.Options);
+            return context;
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using CafeLokaal.Api.Data;
 using CafeLokaal.Api.Models;
 using Microsoft.AspNetCore.Cors;
+using CafeLokaal.Api.Middleware;
 
 namespace CafeLokaal.Api.Controllers;
 
@@ -25,11 +26,11 @@ public class OrdersController : ControllerBase
     // to ensure that the user can only access orders for their organization. Do not trust the organizationId from the query string.
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CafeOrderModel>>> GetOrders([FromQuery] string organizationId)
+    public async Task<ActionResult<IEnumerable<CafeOrder>>> GetOrders(string organizationName)
     {
         try
         {
-            var cafeOrders = await _orderRepository.GetOrdersAsync(organizationId);
+            var cafeOrders = await _orderRepository.GetOrdersAsync(organizationName);
             return Ok(cafeOrders);
         }
         catch (Exception ex)
@@ -40,11 +41,16 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost("/api/orders/seed")]
-    public async Task<ActionResult> CreateDummyOrders()
+    public async Task<ActionResult> CreateDummyOrders(string organizationName)
     {
         try
         {
-            await _orderRepository.CreateDummyOrdersAsync();
+            if (string.IsNullOrEmpty(organizationName))
+            {
+                return BadRequest("Invalid organization name or connection string not found.");
+            }
+
+            await _orderRepository.CreateDummyOrdersAsync(organizationName);
             return Ok(new { Message = "Dummy orders created successfully" });
         }
         catch (Exception ex)

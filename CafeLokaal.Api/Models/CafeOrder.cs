@@ -1,6 +1,6 @@
 namespace CafeLokaal.Api.Models
 {
-    public class CafeOrderModel
+    public class CafeOrder
     {
         public string OrganizationId { get; set; } = string.Empty;
         public string OrganizationName { get; set; } = string.Empty;

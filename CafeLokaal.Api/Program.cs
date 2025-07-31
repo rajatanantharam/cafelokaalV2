@@ -1,10 +1,8 @@
 using CafeLokaal.Api.Data;
+using CafeLokaal.Api.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,15 +20,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add authorization
 builder.Services.AddAuthorization();
 
-// Add DB context
-builder.Services.AddDbContext<CafeLokaalDBContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 26))
-    ));
-
 // Add repositories
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<ICafeResolver, UserCafeResolver>();
+builder.Services.AddScoped<IRegisteredUserRepository, RegisteredUserRepository>();
+
+builder.Services.AddDbContextFactory<CafeLokaalContext>();
+
 
 // Configure kestrel to listen on port 8080
 // builder.WebHost.UseUrls("http://0.0.0.0:8080");
@@ -51,7 +47,6 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors(policy => policy
@@ -62,11 +57,6 @@ if (app.Environment.IsDevelopment())
     IdentityModelEventSource.ShowPII = true;
     IdentityModelEventSource.LogCompleteSecurityArtifact = true;
     app.UseCors("AllowAngularLocalhost");
-
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<CafeLokaalDBContext>();
-    db.Database.Migrate();
-
 }
 
 // app.UseHttpsRedirection();

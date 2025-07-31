@@ -2,16 +2,16 @@ using Microsoft.EntityFrameworkCore;
 using CafeLokaal.Api.Models;
 
 namespace CafeLokaal.Api.Data;
-public class CafeLokaalDBContext(DbContextOptions<CafeLokaalDBContext> options) : DbContext(options)
+public class CafeLokaalContext(DbContextOptions<CafeLokaalContext> options) : DbContext(options)
 {
-    public DbSet<CafeOrderModel> CafeOrderModels { get; set; }
+    public DbSet<CafeOrder> CafeOrders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         // Configure CafeOrderModel entity
-        modelBuilder.Entity<CafeOrderModel>(entity =>
+        modelBuilder.Entity<CafeOrder>(entity =>
         {
             entity.HasKey(e => e.OrderId);
             entity.Property(e => e.OrderId).IsRequired();
