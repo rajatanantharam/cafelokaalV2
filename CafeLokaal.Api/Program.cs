@@ -36,7 +36,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:4200") // your Angular app
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -48,14 +49,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors(policy => policy
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader());
-    // app.UseHttpsRedirection();
-    IdentityModelEventSource.ShowPII = true;
-    IdentityModelEventSource.LogCompleteSecurityArtifact = true;
     app.UseCors("AllowAngularLocalhost");
+    // app.UseHttpsRedirection();
+    // IdentityModelEventSource.ShowPII = true;
+    // IdentityModelEventSource.LogCompleteSecurityArtifact = true;
 }
 
 // app.UseHttpsRedirection();

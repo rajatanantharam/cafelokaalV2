@@ -15,26 +15,7 @@ export class OrderService {
     this.httpClient = http;
   }
 
-  getOrders(): Observable<CafeOrderModel> {
-    // return this.httpClient.get<CafeOrderModel[]>(`${this.apiUrl}/api/orders`);
-    return of(this.getMockOrders());
+  getOrders(): Observable<CafeOrderModel[]> {
+    return this.httpClient.get<CafeOrderModel[]>(`${this.apiUrl}/api/orders`);
   }
-
-  // Mock function to simulate fetching orders
-  getMockOrders(): CafeOrderModel {
-    return  { 
-        organizationId: 'org1',
-        organizationName: 'Cafe Willem',
-        orders: [
-          { orderId: '001', orderState: OrderState.OrderReceived, processTime: 5, processDate: new Date() },
-          { orderId: '002', orderState: OrderState.OrderPrepared, processTime: 12, processDate: new Date() },
-          { orderId: '003', orderState: OrderState.OrderServed, processTime: 8, processDate: new Date() },
-          { orderId: '004', orderState: OrderState.OrderReceived, processTime: 15, processDate: new Date() },
-          { orderId: '005', orderState: OrderState.OrderPrepared, processTime: 7, processDate: new Date() },
-          { orderId: '006', orderState: OrderState.OrderServed, processTime: 10, processDate: new Date() },
-          { orderId: '007', orderState: OrderState.OrderReceived, processTime: 6, processDate: new Date() },
-          { orderId: '008', orderState: OrderState.OrderPrepared, processTime: 14, processDate: new Date() },
-        ]
-      }
-  } 
 }

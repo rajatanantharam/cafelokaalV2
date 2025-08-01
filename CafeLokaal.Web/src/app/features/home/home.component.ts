@@ -5,7 +5,7 @@ import { filter } from 'rxjs/operators';
 import { MsalBroadcastService, MsalGuardConfiguration, MsalService, MSAL_GUARD_CONFIG } from '@azure/msal-angular';
 import { AuthenticationResult, InteractionStatus, InteractionType } from '@azure/msal-browser';
 import { Chart } from 'chart.js';
-import { CafeOrderModel, OrderItem, OrderState } from '../../core/models/order.models';
+import { CafeOrderModel } from '../../core/models/order.models';
 import { OrderService } from '../../core/services/order.service';
 import { ChartService } from '../../core/services/chart.service';
 
@@ -20,7 +20,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   loginDisplay = false;
   private readonly _destroying$ = new Subject<void>();
   private chart?: Chart;
-  private cafeOrderModel: CafeOrderModel | null = null;
+  private cafeOrders: CafeOrderModel[] | null = null;
 
   constructor(
     @Inject(MSAL_GUARD_CONFIG)
@@ -44,7 +44,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
    if (this.loginDisplay && this.orderChart) {
       this.orderService.getOrders().subscribe(x => {
-          this.cafeOrderModel = x;
+          this.cafeOrders = x;
           setTimeout(() => this.createChart(), 100);
        });
     }
@@ -54,7 +54,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loginDisplay = this.authService.instance.getAllAccounts().length > 0;
     if (this.loginDisplay && this.orderChart) {
       this.orderService.getOrders().subscribe(x => {
-          this.cafeOrderModel = x;
+          this.cafeOrders = x;
           setTimeout(() => this.createChart(), 100);
        });
     }
@@ -90,8 +90,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   createChart(): void {
-    if (!this.orderChart || !this.cafeOrderModel || !this.cafeOrderModel.orders) return;
-    this.chart = this.chartService.createChart(this.orderChart, this.cafeOrderModel.orders, this.chart);
+    if (!this.orderChart || !this.cafeOrders || !this.cafeOrders.length) return;
+    this.chart = this.chartService.createChart(this.orderChart, this.cafeOrders, this.chart);
   }
 
   // unsubscribe to events when component is destroyed

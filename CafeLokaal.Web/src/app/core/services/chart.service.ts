@@ -1,6 +1,6 @@
 import { Injectable, ElementRef } from '@angular/core';
 import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
-import { OrderItem, OrderState } from '../models/order.models';
+import { CafeOrderModel } from '../models/order.models';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class ChartService {
     Chart.register(...registerables);
   }
 
-  createChart(chartElement: ElementRef<HTMLCanvasElement>, orders: OrderItem[], existingChart?: Chart): Chart | undefined {
+  createChart(chartElement: ElementRef<HTMLCanvasElement>, cafeOrders: CafeOrderModel[], existingChart?: Chart): Chart | undefined {
     if (!chartElement) return undefined;
 
     const ctx = chartElement.nativeElement.getContext('2d');
@@ -23,10 +23,10 @@ export class ChartService {
     }
 
     const data = {
-      labels: orders.map(order => `Order ${order.orderId}`),
+      labels: cafeOrders.map(order => `Order ${order.processDate}`),
       datasets: [{
         label: 'Process Time (minutes)',
-        data: orders.map(order => order.processTime),
+        data: cafeOrders.map(order => order.processTime),
         backgroundColor: [
           'rgba(54, 162, 235, 0.8)',
           'rgba(255, 99, 132, 0.8)',

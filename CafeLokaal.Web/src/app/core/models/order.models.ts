@@ -1,11 +1,6 @@
 export interface CafeOrderModel {
-  organizationId: string;
   organizationName: string;
-  orders: OrderItem[];
-}
-export interface OrderItem {
-  orderId: string;
-  orderState: OrderState;
+  orderStep: OrderState;
   processTime: number;
   processDate: Date;
 }
