@@ -68,7 +68,7 @@ Thumbs.db
 # Specific to this project
 CafeLokaal.Web/node_modules/
 CafeLokaal.Web/dist/
-CafeLokaal.Web/src/environments/environment.ts
+CafeLokaal.Web/src/environments/environment.local.ts
 CafeLokaal.Web/.angular/
 CafeLokaal.Api/bin/
 CafeLokaal.Api/obj/
