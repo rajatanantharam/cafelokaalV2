@@ -1,0 +1,51 @@
+# This workflow requires manual running to deploy MySQL databases to Azure
+name: Deploy MySQL Databases
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-db:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: cafeolivier
+            creds: AZURE_CREDENTIALS_CAFEOLIVIER
+            dbName: cafeolivier
+            serverName: mysql-cafeolivier
+            resourceGroup: rg-cafeolivier
+            password: DB_ADMIN_PASSWORD_CAFEOLIVIER
+          - name: cafewillem
+            creds: AZURE_CREDENTIALS_CAFEWILLEM
+            dbName: cafewillem
+            serverName: mysql-cafewillem
+            resourceGroup: rg-cafewillem
+            password: DB_ADMIN_PASSWORD_CAFEWILLEM
+          - name: cafeorloff
+            creds: AZURE_CREDENTIALS_CAFEORLOFF
+            dbName: cafeorloff
+            serverName: mysql-cafeorloff
+            resourceGroup: rg-cafeorloff
+            password: DB_ADMIN_PASSWORD_CAFEORLOFF
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets[matrix.creds] }}
+
+      - name: Deploy MySQL Database
+        run: |
+          az group create \
+            --name ${{ matrix.resourceGroup }} \
+            --location westeurope
+
+          az deployment group create \
+            --resource-group ${{ matrix.resourceGroup }} \
+            --template-file infrastructure/mysql-database.bicep \
+            --parameters serverName=${{ matrix.serverName }} \
+                         databaseName=${{ matrix.dbName }} \
+                         adminPassword=${{ secrets[matrix.password] }}
