@@ -41,7 +41,14 @@ jobs:
           node-version: '20'
 
       # ----------------------
-      # Step 4: Build Angular
+      # Step 4: Prepare environment for CI
+      # ----------------------
+
+      - name: Prepare environment for CI
+        run: cp CafeLokaal.Web/src/environments/environment.ci.ts CafeLokaal.Web/src/environments/environment.ts
+    
+      # ----------------------
+      # Step 5: Build Angular
       # ----------------------
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
@@ -52,7 +59,7 @@ jobs:
         working-directory: CafeLokaal.Web
 
     #   # ----------------------
-    #   # Step 5: Deploy Angular to Static Web App
+    #   # Step 6: Deploy Angular to Static Web App
     #   # ----------------------
     #   - name: Deploy to Azure Static Web Apps
     #     uses: Azure/static-web-apps-deploy@v1
