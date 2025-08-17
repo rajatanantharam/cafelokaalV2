@@ -46,19 +46,20 @@ jobs:
 
       - name: Publish
         run: dotnet publish CafeLokaal.Api/CafeLokaal.Api.csproj --configuration Release --output ./publish
-
-      - name: Debug folder
+      
+      - name: Zip publish output
         run: |
-          echo "Current directory: $(pwd)"
-          ls -la ./publish
-          
+          cd ./publish
+          zip -r ../publish.zip .
+          cd ..  
+
       # ───────────── Deploy API Code to App Service ─────────────
       - name: Deploy to App Service
         run: |
           az webapp deploy \
             --resource-group brewtrack \
             --name cafelokaal-api \
-            --src-path CafeLokaal.Api/bin/Release/net9.0/publish
+            --src-path publish.zip
             --type zip
 
       # ───────────── Ensure App Settings are Configured ─────────────
