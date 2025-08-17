@@ -58,7 +58,7 @@ jobs:
           az webapp deploy \
             --resource-group brewtrack \
             --name cafelokaal-api \
-            --src-path publish
+            --src-path CafeLokaal.Api/bin/Release/net9.0/publish
             --type zip
 
       # ───────────── Ensure App Settings are Configured ─────────────
