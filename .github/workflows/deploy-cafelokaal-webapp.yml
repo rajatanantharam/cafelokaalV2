@@ -1,0 +1,64 @@
+name: Deploy Cafelokaal webapp to azure
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ----------------------
+      # Step 1: Azure Login
+      # ----------------------
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_BREWTRACK }}
+
+      # ----------------------
+      # Step 2: Deploy Infra (Bicep)
+      # ----------------------
+      - name: Deploy Static Web App Infra
+        uses: azure/arm-deploy@v2
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ secrets.BREWTRACK_SUBSCRIPTION_ID }}
+          resourceGroupName: brewtrack
+          template: ./Infra/Webapp/cafelokaal-webapp.bicep
+          parameters: >
+            staticWebAppName=cafelokaal-webapp
+
+      # ----------------------
+      # Step 3: Setup Node
+      # ----------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # ----------------------
+      # Step 4: Build Angular
+      # ----------------------
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+        working-directory: CafeLokaal.Web
+
+      - name: Build Angular App
+        run: npm run build -- --configuration production
+        working-directory: CafeLokaal.Web
+
+    #   # ----------------------
+    #   # Step 5: Deploy Angular to Static Web App
+    #   # ----------------------
+    #   - name: Deploy to Azure Static Web Apps
+    #     uses: Azure/static-web-apps-deploy@v1
+    #     with:
+    #       azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+    #       repo_token: ${{ secrets.GITHUB_TOKEN }}
+    #       action: "upload"
+    #       app_location: "CafeLokaal.Web"
+    #       output_location: "dist/cafelokaal-web" # match angular.json
