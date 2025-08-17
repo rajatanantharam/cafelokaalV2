@@ -45,7 +45,12 @@ jobs:
         run: dotnet build CafeLokaal.Api/CafeLokaal.Api.csproj --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish CafeLokaal.Api/CafeLokaal.Api.csproj --configuration Release --output ./CafeLokaal.Api/publish
+        run: dotnet publish CafeLokaal.Api/CafeLokaal.Api.csproj --configuration Release --output ./publish
+
+      - name: Debug folder
+        run: |
+          pwd
+          ls -R ./publish
 
       # ───────────── Deploy API Code to App Service ─────────────
       - name: Deploy to App Service
@@ -53,7 +58,7 @@ jobs:
           az webapp deploy \
             --resource-group brewtrack \
             --name cafelokaal-api \
-            --src-path ./CafeLokaal.Api/publish \
+            --src-path ./publish \
             --type zip
 
       # ───────────── Ensure App Settings are Configured ─────────────
