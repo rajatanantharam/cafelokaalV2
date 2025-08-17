@@ -1,71 +1,51 @@
-name: Deploy Cafelokaal webapp
+name: Deploy CafeLokaal Web App
 
 on:
-  workflow_dispatch:
+  push:
+    branches: [ "main" ]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      # ----------------------
-      # Step 1: Azure Login
-      # ----------------------
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS_BREWTRACK }}
-
-      # ----------------------
-      # Step 2: Deploy Infra (Bicep)
-      # ----------------------
-      - name: Deploy Static Web App Infra
-        uses: azure/arm-deploy@v2
-        with:
-          scope: resourcegroup
-          subscriptionId: ${{ secrets.BREWTRACK_SUBSCRIPTION_ID }}
-          resourceGroupName: brewtrack
-          template: ./Infra/Webapp/cafelokaal-webapp.bicep
-          parameters: >
-            staticWebAppName=cafelokaal-webapp
-
-      # ----------------------
-      # Step 3: Setup Node
-      # ----------------------
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      # ----------------------
-      # Step 4: Prepare environment for CI
-      # ----------------------
-
-      - name: Prepare environment for CI
-        run: cp CafeLokaal.Web/src/environments/environment.ci.ts CafeLokaal.Web/src/environments/environment.ts
-    
-      # ----------------------
-      # Step 5: Build Angular
-      # ----------------------
-      - name: Install Dependencies
-        run: npm install --legacy-peer-deps
+      - name: Install dependencies
+        run: npm ci
         working-directory: CafeLokaal.Web
 
-      - name: Build Angular App
+      - name: Inject environment.prod.ts
+        run: |
+          echo "Creating environment.prod.ts with CI secrets"
+          cat > CafeLokaal.Web/src/environments/environment.prod.ts <<EOL
+          export const environment = {
+            production: true,
+            clientId="${{ secrets.CAFELOKAAL_WEBAPP_CLIENT_ID }}"
+            authority="${{ secrets.AZURE_TENANT_AUTHORITY }}"
+            knownAuthorities="${{ secrets.AZURE_TENANT_KNOWN_AUTHORITIES }}"
+            clientScope="${{ secrets.CAFELOKAAL_WEBAPP_CLIENT_SCOPE }}"
+            apiUrl="${{ secrets.CAFELOKAAL_API_URL }}"
+          };
+          EOL
+        shell: bash
+
+      - name: Debug env file
+        run: cat CafeLokaal.Web/src/environments/environment.prod.ts
+
+      - name: Build Angular app
         run: npm run build -- --configuration production
         working-directory: CafeLokaal.Web
 
-    #   # ----------------------
-    #   # Step 6: Deploy Angular to Static Web App
-    #   # ----------------------
-    #   - name: Deploy to Azure Static Web Apps
-    #     uses: Azure/static-web-apps-deploy@v1
-    #     with:
-    #       azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-    #       repo_token: ${{ secrets.GITHUB_TOKEN }}
-    #       action: "upload"
-    #       app_location: "CafeLokaal.Web"
-    #       output_location: "dist/cafelokaal-web" # match angular.json
+      # - name: Deploy to Azure Static Web Apps
+      #   uses: azure/static-web-apps-deploy@v1
+      #   with:
+      #     azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     action: "upload"
+      #     app_location: "CafeLokaal.Web"
+      #     output_location: "dist/CafeLokaal.Web"
