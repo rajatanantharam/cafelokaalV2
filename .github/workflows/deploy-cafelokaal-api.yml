@@ -39,7 +39,7 @@ jobs:
 
       # ───────────── Build & Publish .NET API ─────────────
       - name: Restore dependencies
-        run: dotnet restore CafeLokaal.Api/CafeLokaal.Api.csproj
+        run: dotnet restore CafeLokaal.Api/CafeLokaal.Api.csproj --configuration Release
 
       - name: Build
         run: dotnet build CafeLokaal.Api/CafeLokaal.Api.csproj --configuration Release --no-restore
@@ -58,7 +58,7 @@ jobs:
           az webapp deploy \
             --resource-group brewtrack \
             --name cafelokaal-api \
-            --src-path ./CafeLokaal.Api/bin/Release/net9.0/publish
+            --src-path publish
             --type zip
 
       # ───────────── Ensure App Settings are Configured ─────────────
