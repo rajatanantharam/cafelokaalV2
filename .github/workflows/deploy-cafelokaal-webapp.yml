@@ -34,9 +34,6 @@ jobs:
           EOL
         shell: bash
 
-      - name: Debug env file
-        run: cat CafeLokaal.Web/src/environments/environment.prod.ts
-
       - name: Build Angular app
         run: npm run build -- --configuration production
         working-directory: CafeLokaal.Web
