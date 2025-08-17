@@ -45,7 +45,7 @@ jobs:
 
           az deployment group create \
             --resource-group ${{ matrix.resourceGroup }} \
-            --template-file infrastructure/mysql-database.bicep \
+            --template-file Infra/Database/mysql-database.bicep \
             --parameters serverName=${{ matrix.serverName }} \
                          databaseName=${{ matrix.dbName }} \
                          adminPassword=${{ secrets[matrix.password] }}
