@@ -24,7 +24,7 @@ jobs:
         run: |
           az deployment group create \
             --resource-group brewtrack \
-            --template-file infrastructure/Databases/mysql-database.bicep \
+            --template-file Infra/Databases/mysql-database.bicep \
             --parameters serverName="cafelokaal-db" \
                          databaseName="cafelokaal" \
                          adminPassword="${{ secrets.DB_ADMIN_PASSWORD_CAFELOKAAL }}" \
