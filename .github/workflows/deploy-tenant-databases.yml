@@ -1,5 +1,5 @@
 # This workflow requires manual running to deploy MySQL databases to Azure
-name: Deploy MySQL Databases
+name: Deploy Tenant Databases
 
 on:
   workflow_dispatch:
