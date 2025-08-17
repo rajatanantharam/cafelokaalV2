@@ -1,0 +1,32 @@
+name: Deploy CafeLokaal Tenant
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-db:
+    runs-on: ubuntu-latest
+    outputs:
+      dbFqdn: ${{ steps.db.outputs.dbFqdn }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS_CAFELOKAAL }}
+
+      - name: Create Resource Group
+        run: az group create --name brewtrack --location westeurope
+
+      - name: Deploy MySQL Database
+        id: db
+        run: |
+          az deployment group create \
+            --resource-group brewtrack \
+            --template-file infrastructure/Databases/mysql-database.bicep \
+            --parameters serverName="cafelokaal-db" \
+                         databaseName="cafelokaal" \
+                         adminPassword="${{ secrets.DB_ADMIN_PASSWORD_CAFELOKAAL }}" \
+            --query "properties.outputs.fqdn.value" -o tsv > dbFqdn.txt
+          echo "dbFqdn=$(cat dbFqdn.txt)" >> $GITHUB_OUTPUT
