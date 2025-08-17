@@ -1,4 +1,4 @@
-name: Deploy CafeLokaal Tenant
+name: Deploy CafeLokaal Database
 
 on:
   workflow_dispatch:
