@@ -41,6 +41,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddApplicationInsightsTelemetry();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -50,9 +53,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors("AllowAngularLocalhost");
-    // app.UseHttpsRedirection();
-    // IdentityModelEventSource.ShowPII = true;
-    // IdentityModelEventSource.LogCompleteSecurityArtifact = true;
 }
 
 // app.UseHttpsRedirection();
