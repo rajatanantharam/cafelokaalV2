@@ -39,13 +39,13 @@ jobs:
 
       # ───────────── Build & Publish .NET API ─────────────
       - name: Restore dependencies
-        run: dotnet restore ./CafeLokaal.API/CafeLokaal.API.csproj
+        run: dotnet restore CafeLokaal.API/CafeLokaal.API.csproj
 
       - name: Build
-        run: dotnet build ./CafeLokaal.API/CafeLokaal.API.csproj --configuration Release --no-restore
+        run: dotnet build CafeLokaal.API/CafeLokaal.API.csproj --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish ./CafeLokaal.API/CafeLokaal.API.csproj --configuration Release --output ./publish
+        run: dotnet publish CafeLokaal.API/CafeLokaal.API.csproj --configuration Release --output ./publish
 
       # ───────────── Deploy API Code to App Service ─────────────
       - name: Deploy to App Service
