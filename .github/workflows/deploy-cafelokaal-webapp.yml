@@ -1,4 +1,4 @@
-name: Deploy Cafelokaal webapp to azure
+name: Deploy Cafelokaal webapp
 
 on:
   workflow_dispatch:
