@@ -25,11 +25,11 @@ jobs:
           cat > CafeLokaal.Web/src/environments/environment.prod.ts <<EOL
           export const environment = {
             production: true,
-            clientId="${{ secrets.CAFELOKAAL_WEBAPP_CLIENT_ID }}"
-            authority="${{ secrets.AZURE_TENANT_AUTHORITY }}"
-            knownAuthorities="${{ secrets.AZURE_TENANT_KNOWN_AUTHORITIES }}"
-            clientScope="${{ secrets.CAFELOKAAL_WEBAPP_CLIENT_SCOPE }}"
-            apiUrl="${{ secrets.CAFELOKAAL_API_URL }}"
+            clientId: "${{ secrets.CAFELOKAAL_WEBAPP_CLIENT_ID }}",
+            authority: "${{ secrets.AZURE_TENANT_AUTHORITY }}",
+            knownAuthorities: "${{ secrets.AZURE_TENANT_KNOWN_AUTHORITIES }}",
+            clientScope: "${{ secrets.CAFELOKAAL_WEBAPP_CLIENT_SCOPE }}",
+            apiUrl: "${{ secrets.CAFELOKAAL_API_URL }}"
           };
           EOL
         shell: bash
