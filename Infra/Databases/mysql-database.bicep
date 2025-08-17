@@ -17,7 +17,7 @@ resource mysql 'Microsoft.DBforMySQL/flexibleServers@2024-12-01-preview' = {
     administratorLoginPassword: adminPassword
     version: '5.7'
     storage: {
-      storageSizeGB: 10
+      storageSizeGB: 20
     }
     network: {
       publicNetworkAccess: 'Enabled'
