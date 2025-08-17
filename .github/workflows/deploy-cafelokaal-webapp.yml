@@ -41,11 +41,11 @@ jobs:
         run: npm run build -- --configuration production
         working-directory: CafeLokaal.Web
 
-      # - name: Deploy to Azure Static Web Apps
-      #   uses: azure/static-web-apps-deploy@v1
-      #   with:
-      #     azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
-      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
-      #     action: "upload"
-      #     app_location: "CafeLokaal.Web"
-      #     output_location: "dist/CafeLokaal.Web"
+      - name: Deploy to Azure Static Web Apps
+        uses: azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "CafeLokaal.Web"
+          output_location: "dist/CafeLokaal.Web"
