@@ -31,11 +31,7 @@ jobs:
         run: |
           az deployment group create \
             --resource-group brewtrack \
-            --template-file Infra/API/cafelokaal-api.bicep \
-            --parameters dbFqdn="${{ secrets.CAFELOKAAL_DB_FQDN }}" \
-                         dbName="cafelokaal" \
-                         dbUser="mysqladmin" \
-                         dbPassword="${{ secrets.DB_ADMIN_PASSWORD_CAFELOKAAL }}"
+            --template-file Infra/API/cafelokaal-api.bicep
 
       # ───────────── Build & Publish .NET API ─────────────
       - name: Restore dependencies
@@ -85,11 +81,27 @@ jobs:
             --resource-group brewtrack \
             --name cafelokaal-api \
             --settings MSENTRA__Domain="${{ secrets.MSENTRA_DOMAIN }}"
-          az webapp config appsettings set \
+                
+          az webapp config connection-string set \
+          --resource-group brewtrack \
+          --name cafelokaal-api \
+          --settings CafeLokaal='Server=mysql-cafelokaal.mysql.database.azure.com;Database=cafelokaal;User ID=mysqladmin@mysql-cafelokaal;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFELOKAAL }};SslMode=Required;' \
+          --connection-string-type MySQL
+
+          az webapp config connection-string set \
             --resource-group brewtrack \
             --name cafelokaal-api \
-            --settings \
-              ConnectionStrings__CafeLokaal='Server=mysql-cafelokaal.mysql.database.azure.com;Port=3306;User ID=mysqladmin@mysql-cafelokaal;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFELOKAAL }};Database=cafelokaal;SslMode=Required;' \
-              ConnectionStrings__CafeWillem='Server=mysql-cafewillem.mysql.database.azure.com;Port=3306;User ID=mysqladmin@mysql-cafewillem;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFEWILLEM }};Database=cafewillem;SslMode=Required;' \
-              ConnectionStrings__CafeOlivier='Server=mysql-cafeolivier.mysql.database.azure.com;Port=3306;User ID=mysqladmin@mysql-cafeolivier;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFEOLIVIER }};Database=cafeolivier;SslMode=Required;' \
-              ConnectionStrings__CafeOrloff='Server=mysql-cafeorloff.mysql.database.azure.com;Port=3306;User ID=mysqladmin@mysql-cafeorloff;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFEORLOFF }};Database=cafeorloff;SslMode=Required;'
+            --settings CafeWillem='Server=mysql-cafewillem.mysql.database.azure.com;Database=cafewillem;User ID=mysqladmin@mysql-cafewillem;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFEWILLEM }};SslMode=Required;' \
+            --connection-string-type MySQL
+
+          az webapp config connection-string set \
+            --resource-group brewtrack \
+            --name cafelokaal-api \
+            --settings CafeOlivier='Server=mysql-cafeolivier.mysql.database.azure.com;Database=cafeolivier;User ID=mysqladmin@mysql-cafeolivier;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFEOLIVIER }};SslMode=Required;' \
+            --connection-string-type MySQL
+
+          az webapp config connection-string set \
+            --resource-group brewtrack \
+            --name cafelokaal-api \
+            --settings CafeOrloff='Server=mysql-cafeorloff.mysql.database.azure.com;Database=cafeorloff;User ID=mysqladmin@mysql-cafeorloff;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFEORLOFF }};SslMode=Required;' \
+            --connection-string-type MySQL
