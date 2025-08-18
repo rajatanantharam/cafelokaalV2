@@ -85,7 +85,7 @@ jobs:
           az webapp config connection-string set \
           --resource-group brewtrack \
           --name cafelokaal-api \
-          --settings CafeLokaal='Server=mysql-cafelokaal.mysql.database.azure.com;Database=cafelokaal;UserID=mysqladmin;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFELOKAAL }};SslMode=Required;' \
+          --settings CafeLokaal='Server=cafelokaal-db.mysql.database.azure.com;Database=cafelokaal;UserID=mysqladmin;Password=${{ secrets.DB_ADMIN_PASSWORD_CAFELOKAAL }};SslMode=Required;' \
           --connection-string-type MySQL
 
           az webapp config connection-string set \
