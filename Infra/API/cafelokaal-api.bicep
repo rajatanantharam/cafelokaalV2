@@ -31,6 +31,3 @@ resource api 'Microsoft.Web/sites@2022-03-01' = {
     }
   }
 }
-
-// ────────────── Output ──────────────
-output apiUrl string = api.properties.defaultHostName
