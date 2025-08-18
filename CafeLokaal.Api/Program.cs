@@ -32,14 +32,14 @@ builder.Services.AddDbContextFactory<CafeLokaalContext>();
 // 🔥 Add CORS policy
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngularLocalhost", policy =>
+    options.AddPolicy("AllowStaticWebApp", policy =>
     {
-        policy.WithOrigins("http://localhost:4200") // your Angular app
+        policy.WithOrigins("https://orange-smoke-0bf9dda03.2.azurestaticapps.net") // your Angular app
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowAnyMethod();
     });
 });
+
 
 builder.Services.AddApplicationInsightsTelemetry();
 
@@ -54,6 +54,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseCors("AllowAngularLocalhost");
 }
+
+app.UseCors("AllowStaticWebApp");
 
 // app.UseHttpsRedirection();
 
