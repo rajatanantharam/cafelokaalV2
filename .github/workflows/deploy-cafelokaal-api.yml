@@ -96,7 +96,7 @@ jobs:
           az webapp config appsettings set \
             --resource-group brewtrack \
             --name cafelokaal-api \
-            --settings ConnectionStrings__CafeOlivier="Server=mysql-cafeolivier.mysql.database.azure.com;Database=mysql-cafeolivier;User Id=cafeolivieruser@mysql-cafeolivier;Password=supersecretpwd!;SslMode=Required"
+            --settings ConnectionStrings__CafeOlivier="Server=mysql-cafeolivier.mysql.database.azure.com;Database=mysql-cafeolivier;User Id=mysqladmin@mysql-cafeolivier;Password=supersecretpwd!;SslMode=Required"
 
 
           az webapp config appsettings set \
