@@ -62,13 +62,48 @@ jobs:
             --src-path publish.zip \
             --type zip
 
-      # ───────────── Ensure App Settings are Configured ─────────────
-      - name: Configure App Settings
+      # ───────────── Inject App Settings / Secrets ─────────────
+      - name: Configure App Settings / Secrets
         run: |
+          # MS Entra / Authentication
           az webapp config appsettings set \
             --resource-group brewtrack \
             --name cafelokaal-api \
-            --settings DB_HOST="${{ secrets.CAFELOKAAL_DB_FQDN }}" \
-                        DB_NAME=cafelokaal \
-                        DB_USER=mysqladmin \
-                        DB_PASSWORD="${{ secrets.DB_ADMIN_PASSWORD_CAFELOKAAL }}"
+            --settings MSENTRA__ClientId="${{ secrets.MSENTRA_CLIENT_ID }}"
+
+          az webapp config appsettings set \
+            --resource-group brewtrack \
+            --name cafelokaal-api \
+            --settings MSENTRA__Instance="${{ secrets.MSENTRA_INSTANCE }}"
+
+          az webapp config appsettings set \
+            --resource-group brewtrack \
+            --name cafelokaal-api \
+            --settings MSENTRA__Authority="${{ secrets.MSENTRA_AUTHORITY }}"
+
+          az webapp config appsettings set \
+            --resource-group brewtrack \
+            --name cafelokaal-api \
+            --settings MSENTRA__Domain="${{ secrets.MSENTRA_DOMAIN }}"
+
+          # Cafelokaal database connection strings
+          az webapp config appsettings set \
+            --resource-group brewtrack \
+            --name cafelokaal-api \
+            --settings ConnectionStrings__CafeLokaal="${{ secrets.CAFELOKAAL_DB_FQDN }}"
+
+          # Tenant database connection strings
+          az webapp config appsettings set \
+            --resource-group brewtrack \
+            --name cafelokaal-api \
+            --settings ConnectionStrings__CafeOlivier="${{ secrets.CAFEOLIVIER_DB_FQDN }}"
+
+          az webapp config appsettings set \
+            --resource-group brewtrack \
+            --name cafelokaal-api \
+            --settings ConnectionStrings__CafeWillem="${{ secrets.CAFEWILLEM_DB_FQDN }}"
+
+          az webapp config appsettings set \
+            --resource-group brewtrack \
+            --name cafelokaal-api \
+            --settings ConnectionStrings__CafeOrloff="${{ secrets.CAFEORLOFF_DB_FQDN }}"
