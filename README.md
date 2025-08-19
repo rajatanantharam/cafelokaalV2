@@ -1,8 +1,17 @@
-# CafeLokaal - Functional Requirements
+# CafeLokaal - SaaS Platform for Cafe Order Processing Analytics
 
 ## 1. Overview
 
-CafeLokaal is a SaaS platform for cafes to integrate their POS systems and visualize order processing blockages. The platform includes a secure .NET backend hosted on Azure and a frontend built with Angular. The system is designed to be scalable, GDPR-compliant, and support any number of tenant cafes.
+CafeLokaal is a multi-tenant SaaS platform that enables cafes to integrate their POS systems and visualize order processing analytics and blockages. The platform consists of a secure .NET 9.0 Web A### 10.1 Terminology
+
+- **Cafe** = Tenant organization in the multi-tenant system
+- **Cafe Owner** = Authenticated user with access to their organization's data only
+- **Organization** = Business entity (cafe) that owns order data
+- **POS** = Point of Sale system that generates order data
+- **Blockage** = Delay or bottleneck in order processing workflow
+- **Order Step** = Individual stage in the order processing pipeline
+
+### 10.2 Cafe Data Modelkend hosted on Azure and an Angular 18 frontend. The system is designed to be scalable, GDPR-compliant, and supports multiple tenant cafes with organization-based data isolation.
 
 ---
 
@@ -71,31 +80,30 @@ Host: api.cafelokaal.com
 Authorization: Bearer {access_token}
 ```
 
-- **Response:** A JSON array of Cafe Order Models for the authenticated cafe.
+- **Response:** A JSON array of Cafe Order Models for the authenticated user's organization.
 
 ```json
 [
   {
+    "organizationId": "12345",
+    "organizationName": "CafeExample",
     "orderId": "123e4567-e89b-12d3-a456-426614174000",
-    "orderStates": {
-      "orderReceived": {
-        "startTimestamp": "2025-07-22T08:30:00Z",
-        "endTimestamp": "2025-07-22T08:31:00Z"
-      },
-      "orderPrepared": {
-        "startTimestamp": "2025-07-22T08:31:30Z",
-        "endTimestamp": "2025-07-22T08:35:00Z"
-      },
-      "orderServed": {
-        "startTimestamp": "2025-07-22T08:36:00Z",
-        "endTimestamp": "2025-07-22T08:40:00Z"
-      }
-    }
+    "orderStep": "OrderReceived",
+    "processTime": 120,
+    "processDate": "2025-08-19T08:30:00Z"
+  },
+  {
+    "organizationId": "12345", 
+    "organizationName": "CafeExample",
+    "orderId": "123e4567-e89b-12d3-a456-426614174000",
+    "orderStep": "OrderPrepared",
+    "processTime": 300,
+    "processDate": "2025-08-19T08:32:00Z"
   }
 ]
 ```
 
-- Backend uses the authenticated user's context to filter orders for their associated CafeId (multi-tenancy enforced).
+- Backend uses the authenticated user's email to lookup their organization via the UserAccess table, ensuring multi-tenancy and data isolation.
 
 - **Error Responses:**
 
@@ -103,11 +111,13 @@ Authorization: Bearer {access_token}
   - `403 Forbidden`: User does not have permission to access the data.
   - `500 Internal Server Error`: Unexpected backend failure.
 
-### 3.4 POS Data Integration
+### 3.4 POS Data Integration (Planned)
 
 - **Rate Limiting:** Maximum 60 requests per minute per cafe. Exceeding this limit will result in a `429 Too Many Requests` response.
 
-#### Integration Instructions for Cafes
+**Note**: The POS data integration endpoints are currently planned but not yet implemented. The system currently supports manual data seeding for testing purposes through the `/api/orders/seed` endpoint.
+
+#### Planned Integration Instructions for Cafes
 
 To integrate your POS system with CafeLokaal:
 
@@ -192,29 +202,58 @@ To integrate your POS system with CafeLokaal:
 
 ## 4. System Requirements
 
-### 4.1 Frontend (Angular)
+### 4.1 Frontend (Angular 18)
 
-- Angular 17+
-- Hosted on Azure Static Web Apps or CDN
-- MSAL integration for secure token handling
+- Angular 18 with TypeScript 5.4.5
+- Azure MSAL integration (@azure/msal-angular 3.1.0, @azure/msal-browser 3.28.1)
+- Angular Material for UI components
+- Chart.js (4.5.0) with chartjs-adapter-date-fns for data visualization
+- Hosted on Azure Static Web Apps
+- CORS configured for secure communication with API
 
-### 4.2 Backend (.NET)
+### 4.2 Backend (.NET 9.0)
 
-- .NET (Latest Version)
-- Hosted on Azure App Service
-- Uses Microsoft.Identity.Web for token validation
-- Role-based authorization
-- Entity Framework with multi-tenant filtering (per CafeId)
+- .NET 9.0 Web API
+- Hosted on Azure App Service with Docker support
+- Uses Microsoft.Identity.Web for JWT token validation
+- Entity Framework Core with MySQL (Pomelo provider)
+- Multi-tenant data isolation using organization-based filtering
+- Application Insights integration for telemetry
+- Azure Key Vault integration for secure configuration management
 
-### 4.3 Azure Services
+#### Current API Endpoints
 
-- Azure SQL: Data storage (tenant-aware)
-- Azure Key Vault: Secure key and secret storage
-- Azure AD B2C: Authentication and identity management
-- Azure Blob Storage: Archive POS data if needed
-- Azure Functions: Process POS data async
-- Azure Monitor + App Insights: Logging and telemetry
-- Azure Service Bus (optional): Decoupled ingestion and processing
+- `GET /api/orders` - Retrieve orders for authenticated user's organization
+- `POST /api/orders/seed` - Create dummy orders for testing (requires organization name)
+- `POST /api/admin/useraccess` - Create user access mapping (admin endpoint)
+- `GET /api/admin/useraccess` - Retrieve user access information
+- `GET /api/health` - Basic health check
+- `GET /api/health/db` - Database connectivity health check
+
+#### Key Dependencies
+
+- Microsoft.Identity.Web (3.11.0) - Azure AD authentication
+- Entity Framework Core (8.0.4) - Data access
+- Pomelo.EntityFrameworkCore.MySql (8.0.0) - MySQL provider
+- Azure.Identity & Azure.Security.KeyVault.Secrets - Azure integration
+- Microsoft.ApplicationInsights.AspNetCore - Telemetry
+
+### 4.3 Azure Services & Infrastructure
+
+- **Database**: MySQL hosted on Azure (using Entity Framework Core with Pomelo provider)
+- **Compute**: Azure App Service for API hosting with Docker support
+- **Frontend**: Azure Static Web Apps for Angular application
+- **Authentication**: Azure AD B2C with Microsoft Identity Web integration
+- **Monitoring**: Azure Application Insights for telemetry and performance monitoring
+- **Security**: Azure Key Vault for secrets management
+- **Infrastructure as Code**: Bicep templates for Azure resource provisioning
+
+#### Infrastructure Components
+
+- API App Service with Basic (B1) tier
+- MySQL database for multi-tenant data storage
+- Web App for Angular frontend hosting
+- Resource group organization for environment management
 
 ---
 
@@ -251,9 +290,9 @@ To integrate your POS system with CafeLokaal:
 
 ---
 
-## 7. Appendix
+## 10. Appendix
 
-- Cafe = Tenant
+### 10.1 Terminology
 - Cafe Owner = Authenticated user with access to their cafe’s data only
 - POS = Point of Sale system
 - Blockage = Delay or failure in order processing
@@ -271,20 +310,127 @@ Each cafe in the system includes the following information:
   - **Address** (string)
   - **Telephone Number** (string)
 
-### 7.2 Cafe Order Model
+### 10.3 Cafe Order Model (Current Implementation)
 
-Each order submitted by a cafe includes the following data:
+The current implementation uses a simplified order model that tracks individual order steps:
 
-- **OrderId** (GUID): Unique identifier for the order
-- **Order States** (object with 3 stages):
-  - **Order Received**:
-    - `StartTimestamp` (datetime)
-    - `EndTimestamp` (datetime)
-  - **Order Prepared**:
-    - `StartTimestamp` (datetime)
-    - `EndTimestamp` (datetime)
-  - **Order Served**:
-    - `StartTimestamp` (datetime)
-    - `EndTimestamp` (datetime)
+- **OrderId** (string): Unique identifier for the order
+- **OrganizationId** (string): Unique identifier for the cafe/organization
+- **OrganizationName** (string): Display name of the organization
+- **OrderStep** (OrderStep enum): Current step in the order process
+  - `OrderReceived`: Order has been received by the system
+  - `OrderPrepared`: Order has been prepared
+  - `OrderServed`: Order has been served to customer
+  - `Unknown`: Default/error state
+- **ProcessTime** (int): Time taken for this step in seconds/minutes
+- **ProcessDate** (DateTime): Timestamp when this step was completed
 
-The frontend application will use these timestamps to visualize where delays or bottlenecks occur in the ordering process.
+**Note**: The current implementation differs from the original specification which included nested order states with start/end timestamps. The current model tracks individual steps with process times, which provides a simpler data structure for analytics while still enabling blockage detection and performance analysis.
+
+### 10.4 User Access Model
+
+The platform uses a UserAccess model for multi-tenant access control:
+
+- **Email** (string): User's email address (from Azure AD claims)
+- **OrganizationName** (string): Name of the organization the user belongs to
+- **SubscriptionId** (string): Azure subscription identifier for the organization
+
+This model enables organization-based data isolation, ensuring users can only access data for their assigned organization.
+
+---
+
+## 8. Project Structure
+
+### 8.1 Solution Organization
+
+```
+CafeLokaal.sln                    # Main solution file
+├── CafeLokaal.Api/               # .NET 9.0 Web API
+│   ├── Controllers/              # API controllers
+│   │   ├── OrdersController.cs   # Order management endpoints
+│   │   ├── AdminController.cs    # Administrative endpoints
+│   │   └── HealthController.cs   # Health check endpoints
+│   ├── Data/                     # Data access layer
+│   │   ├── CafeLokaalContext.cs  # Entity Framework DbContext
+│   │   ├── DBContextResolver.cs  # Multi-tenant context resolution
+│   │   ├── OrderRepository.cs    # Order data operations
+│   │   └── UserAccessRepository.cs # User access management
+│   ├── Models/                   # Data models
+│   │   ├── CafeOrder.cs         # Order entity model
+│   │   └── UserAccess.cs        # User access entity model
+│   ├── Dockerfile               # Docker containerization
+│   └── docker-compose.yml       # Local development setup
+├── CafeLokaal.Web/              # Angular 18 frontend
+│   ├── src/app/                 # Angular application
+│   │   ├── core/                # Core services and guards
+│   │   └── features/            # Feature modules
+│   └── package.json             # Frontend dependencies
+└── Infra/                       # Infrastructure as Code
+    ├── API/                     # API infrastructure
+    ├── Databases/               # Database setup
+    └── Webapp/                  # Frontend hosting
+```
+
+### 8.2 Key Architecture Decisions
+
+- **Multi-tenancy**: Organization-based data isolation using UserAccess table
+- **Authentication**: Azure AD B2C with JWT bearer tokens
+- **Database**: MySQL with Entity Framework Core and Pomelo provider
+- **Frontend**: Angular 18 with MSAL for Azure integration
+- **Infrastructure**: Bicep templates for Azure resource management
+- **Containerization**: Docker support for API deployment
+
+---
+
+## 9. Development & Deployment
+
+### 9.1 Local Development
+
+#### Prerequisites
+- .NET 9.0 SDK
+- Node.js 18+ and npm
+- Angular CLI 18
+- MySQL database (local or Azure-hosted)
+- Azure AD B2C tenant configuration
+
+#### API Development
+```bash
+cd CafeLokaal.Api
+dotnet restore
+dotnet run
+```
+
+#### Frontend Development
+```bash
+cd CafeLokaal.Web
+npm install
+ng serve
+```
+
+### 9.2 Docker Support
+
+The API includes Docker support with multi-stage builds:
+
+```dockerfile
+# Build stage with .NET 9.0 SDK
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
+# Runtime stage with ASP.NET Core 9.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+```
+
+### 9.3 Infrastructure Deployment
+
+The project includes Bicep templates for Infrastructure as Code:
+
+- `Infra/API/cafelokaal-api.bicep` - API App Service provisioning
+- `Infra/Databases/mysql-database.bicep` - MySQL database setup
+- `Infra/Webapp/cafelokaal-webapp.bicep` - Frontend hosting
+
+### 9.4 Current Limitations & TODOs
+
+- Rate limiting implementation is documented but not yet implemented
+- POS data integration endpoints need to be developed
+- GDPR compliance endpoints are planned but not implemented
+- Comprehensive testing suite needs to be added
+- API token management functionality is not yet implemented
